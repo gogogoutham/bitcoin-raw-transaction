@@ -12,7 +12,7 @@ buf = ''
 step = 0
 while 1:
     if len(header) == 0: break
-    magic, cmd, payload_len, checksum = struct.unpack('L12sL4s', header)
+    magic, cmd, payload_len, checksum = struct.unpack('<L12sL4s', header)
     buf = ''
     while payload_len > 0:
         chunk = sock.recv(payload_len)

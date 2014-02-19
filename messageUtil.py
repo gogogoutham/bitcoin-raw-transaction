@@ -11,7 +11,7 @@ import networkUtil
 def makeCore(network, command, payload):
     """ Adds the common message structure around a payload """
     checksum = hashlib.sha256(hashlib.sha256(payload).digest()).digest()[0:4]
-    return struct.pack('L12sL4s', 
+    return struct.pack('<L12sL4s', 
         networkUtil.magics[network], 
         command, 
         len(payload), 
@@ -20,15 +20,15 @@ def makeCore(network, command, payload):
 def makeVersion(network, version, services, timestamp, addressReceived, portReceived, addressFrom, portFrom, nonce, userAgent, startHeight, relay):
     """ Makes a version message message given the provided arguments """
     payloadFields = []
-    payloadFields.append(struct.pack("lQq26s26s",
+    payloadFields.append(struct.pack("<lQq26s26s",
         version, 
         services, 
         timestamp,
         translationUtil.formatNetAddress(timestamp, services, addressReceived, portReceived),
         translationUtil.formatNetAddress(timestamp, services, addressFrom, portFrom)))
-    payloadFields.append(struct.pack("Q",nonce))
+    payloadFields.append(struct.pack("<Q",nonce))
     payloadFields.append(translationUtil.formatVarStr(userAgent))
-    payloadFields.append(struct.pack("l?",  
+    payloadFields.append(struct.pack("<l?",  
         startHeight,
         relay))
     return makeCore(network, "version", "".join(payloadFields))
@@ -68,7 +68,7 @@ def makeTransactionSimple(network, *args):
 addrCount = 0 
 def parse(header, payload):
     """ Processes a response from a peer."""
-    magic, cmd, payload_len, checksum = struct.unpack('L12sL4s', header)
+    magic, cmd, payload_len, checksum = struct.unpack('<L12sL4s', header)
     if len(payload) != payload_len:
         print 'BAD PAYLOAD LENGTH', len(payload), payload_len
         
